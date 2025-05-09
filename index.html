@@ -58,8 +58,10 @@
             const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
             const isAndroid = /Android/i.test(navigator.userAgent);
             const storeUrl = isIOS ? appStoreUrl : isAndroid ? playStoreUrl : '';
+            console.log('iOS:', isIOS, 'Android:', isAndroid, 'Store:', storeUrl); // 调试：设备检测
 
             // 尝试打开应用
+            console.log('Trying to open app with scheme:', appScheme); // 调试：Scheme 调用
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.src = appScheme;
@@ -68,17 +70,17 @@
             // 设置延时检测
             const startTime = Date.now();
             setTimeout(() => {
-                // 如果 2 秒后页面仍在，说明应用未安装
-                if (Date.now() - startTime < 1500) {
+                console.log('Timeout triggered, time elapsed:', Date.now() - startTime); // 调试：超时情况
+                if (Date.now() - startTime < 3200) {
+                    console.log('App not opened, redirecting to:', storeUrl); // 调试：跳转商店
                     if (storeUrl) {
                         window.location.href = storeUrl;
                     } else {
                         alert('无法检测设备类型，请手动打开应用商店');
                     }
                 }
-                // 清理 iframe
                 document.body.removeChild(iframe);
-            }, 2000);
+            }, 3000);
         }
     </script>
 </body>
