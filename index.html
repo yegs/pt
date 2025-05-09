@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
    <head>
       <style>
@@ -11,4 +11,75 @@
       <a href="https://c32m.adj.st/markets?adj_t=1ojq52io&adj_label=a1234">Deep Link</a>
       <a href="https://app.adjust.com/1ojq52io?label=123456&deep_link=phemex%3A%2F%2F">Deep Link2</a>
    </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open App or Redirect</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="openApp()">打开应用</button>
+
+    <script>
+        function openApp() {
+            // 应用 Scheme URL（需替换为你的应用 Scheme）
+            const appScheme = 'pt://';
+            // 应用商店链接
+            const appStoreUrl = 'https://apps.apple.com/app/id989804926'; // iOS App Store 链接
+            const playStoreUrl = 'https://play.google.com/store/apps'; // Android Google Play 链接
+
+            // 检测设备类型
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const storeUrl = isIOS ? appStoreUrl : isAndroid ? playStoreUrl : '';
+
+            // 尝试打开应用
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = appScheme;
+            document.body.appendChild(iframe);
+
+            // 设置延时检测
+            const startTime = Date.now();
+            setTimeout(() => {
+                // 如果 2 秒后页面仍在，说明应用未安装
+                if (Date.now() - startTime < 1200) {
+                    if (storeUrl) {
+                        window.location.href = storeUrl;
+                    } else {
+                        alert('无法检测设备类型，请手动打开应用商店');
+                    }
+                }
+                // 清理 iframe
+                document.body.removeChild(iframe);
+            }, 2000);
+        }
+    </script>
+</body>
 </html>
