@@ -81,11 +81,11 @@
             const startTime = Date.now();
             setTimeout(() => {
                 console.log('Timeout triggered, time elapsed:', Date.now() - startTime);
-                if (Date.now() - startTime < 3200) {
+                if (Date.now() - startTime < 1500) {
                     console.log('App not opened, redirecting to:', storeUrl);
                     window.location.href = storeUrl;
                 }
-            }, 3000);
+            }, 1000);
         }
     </script>
 </body>
