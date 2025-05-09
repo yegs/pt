@@ -62,24 +62,29 @@
 
             // 尝试打开应用
             console.log('Trying to open app with scheme:', appScheme); // 调试：Scheme 调用
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = appScheme;
-            document.body.appendChild(iframe);
+            try {
+                // 方法 1：直接跳转（优先尝试）
+                window.location.href = appScheme;
+            } catch (e) {
+                console.error('Direct scheme failed:', e);
+                // 方法 2：备用 iframe 方式
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = appScheme;
+                document.body.appendChild(iframe);
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 1000);
+            }
 
             // 设置延时检测
             const startTime = Date.now();
             setTimeout(() => {
-                console.log('Timeout triggered, time elapsed:', Date.now() - startTime); // 调试：超时情况
+                console.log('Timeout triggered, time elapsed:', Date.now() - startTime);
                 if (Date.now() - startTime < 3200) {
-                    console.log('App not opened, redirecting to:', storeUrl); // 调试：跳转商店
-                    if (storeUrl) {
-                        window.location.href = storeUrl;
-                    } else {
-                        alert('无法检测设备类型，请手动打开应用商店');
-                    }
+                    console.log('App not opened, redirecting to:', storeUrl);
+                    window.location.href = storeUrl;
                 }
-                document.body.removeChild(iframe);
             }, 3000);
         }
     </script>
