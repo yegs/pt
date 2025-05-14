@@ -22,6 +22,7 @@
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -41,33 +42,32 @@
         button:hover {
             background-color: #0056b3;
         }
+        #timezone {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
     <button onclick="openApp()">打开应用</button>
+    <div id="timezone">正在获取时区...</div> <!-- 用于显示时区信息 -->
 
     <script>
         function openApp() {
-            // 应用 Scheme URL（需替换为你的应用 Scheme）
             const appScheme = 'pt://';
-            // 应用商店链接
             const appStoreUrl = 'https://apps.apple.com/app/id989804926'; // iOS App Store 链接
             const playStoreUrl = 'https://play.google.com/store/apps'; // Android Google Play 链接
 
-            // 检测设备类型
             const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
             const isAndroid = /Android/i.test(navigator.userAgent);
             const storeUrl = isIOS ? appStoreUrl : isAndroid ? playStoreUrl : '';
-            console.log('iOS:', isIOS, 'Android:', isAndroid, 'Store:', storeUrl); // 调试：设备检测
+            console.log('iOS:', isIOS, 'Android:', isAndroid, 'Store:', storeUrl);
 
-            // 尝试打开应用
-            console.log('Trying to open app with scheme:', appScheme); // 调试：Scheme 调用
             try {
-                // 方法 1：直接跳转（优先尝试）
                 window.location.href = appScheme;
             } catch (e) {
                 console.error('Direct scheme failed:', e);
-                // 方法 2：备用 iframe 方式
                 const iframe = document.createElement('iframe');
                 iframe.style.display = 'none';
                 iframe.src = appScheme;
@@ -77,16 +77,25 @@
                 }, 1000);
             }
 
-            // 设置延时检测
             const startTime = Date.now();
             setTimeout(() => {
-                console.log('Timeout triggered, time elapsed:', Date.now() - startTime);
                 if (Date.now() - startTime < 1500) {
                     console.log('App not opened, redirecting to:', storeUrl);
                     window.location.href = storeUrl;
                 }
             }, 1000);
         }
+
+        // 显示时区信息
+        function displayTimeZone() {
+            const timezoneElement = document.getElementById('timezone');
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; // 获取时区
+            const dateStr = new Date().toString(); // 获取包含时区的日期字符串
+            timezoneElement.textContent = `当前时区：${timeZone} (${dateStr})`;
+        }
+
+        // 调用显示时区函数
+        displayTimeZone();
     </script>
 </body>
 </html>
