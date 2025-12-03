@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery 测试页面</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #0056CC;
+        }
+        .button:active {
+            background-color: #004499;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            min-height: 50px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .info {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>jQuery 测试页面</h1>
+        <p>此页面使用 appLink:// 协议加载 jQuery 库</p>
+        
+        <button class="button" id="testJQuery">测试 jQuery 是否加载</button>
+        <button class="button" id="testAjax">测试 Ajax 请求</button>
+        <button class="button" id="testAnimation">测试动画效果</button>
+        <button class="button" id="testDOM">测试 DOM 操作</button>
+        <button class="button" id="clearCache" style="background-color: #dc3545;">清理缓存</button>
+        
+        <div class="result" id="result">
+            <div class="info">点击上面的按钮测试 jQuery 功能</div>
+        </div>
+    </div>
+
+    <!-- 使用 appLink 协议加载 jQuery -->
+    <script src="applink://code.jquery.com/jquery-3.7.1.js"></script>
+    <script>
+        // 显示结果
+        function showResult(message, isError) {
+            const resultDiv = $('#result');
+            const time = new Date().toLocaleTimeString();
+            const className = isError ? 'error' : 'success';
+            resultDiv.html('<div class="info">[' + time + ']</div><div class="' + className + '">' + message + '</div>');
+        }
+
+        // 等待 jQuery 加载完成
+        $(document).ready(function() {
+            console.log('jQuery 版本:', $.fn.jquery);
+            showResult('jQuery ' + $.fn.jquery + ' 已成功加载！', false);
+            
+            // 测试 jQuery 是否加载
+            $('#testJQuery').on('click', function() {
+                if (typeof $ !== 'undefined' && $.fn.jquery) {
+                    showResult('✅ jQuery 已成功加载！\n版本: ' + $.fn.jquery + '\n$ 函数可用: ' + (typeof $ !== 'undefined'), false);
+                } else {
+                    showResult('❌ jQuery 加载失败！', true);
+                }
+            });
+            
+            // 测试 Ajax 请求
+            $('#testAjax').on('click', function() {
+                showResult('正在发送 Ajax 请求...', false);
+                $.ajax({
+                    url: 'https://httpbin.org/get',
+                    method: 'GET',
+                    timeout: 5000,
+                    success: function(data) {
+                        showResult('✅ Ajax 请求成功！\n响应: ' + JSON.stringify(data, null, 2), false);
+                    },
+                    error: function(xhr, status, error) {
+                        showResult('❌ Ajax 请求失败！\n状态: ' + status + '\n错误: ' + error, true);
+                    }
+                });
+            });
+            
+            // 测试动画效果
+            $('#testAnimation').on('click', function() {
+                const $button = $(this);
+                $button.fadeOut(300).fadeIn(300);
+                showResult('✅ 动画效果测试完成！', false);
+            });
+            
+            // 测试 DOM 操作
+            $('#testDOM').on('click', function() {
+                const $result = $('#result');
+                $result.css('background-color', '#e3f2fd');
+                setTimeout(function() {
+                    $result.css('background-color', '#f0f0f0');
+                }, 1000);
+                showResult('✅ DOM 操作测试完成！\n已修改结果区域的背景色', false);
+            });
+            
+            // 清理缓存
+            $('#clearCache').on('click', function() {
+                if (window.NativeBridge && typeof window.NativeBridge.clearCache === 'function') {
+                    showResult('正在清理缓存...', false);
+                    window.NativeBridge.clearCache();
+                } else {
+                    showResult('❌ NativeBridge.clearCache 不可用', true);
+                }
+            });
+        });
+        
+        // 监听缓存清理完成回调
+        window.onCacheCleared = function(data) {
+            if (data && data.success) {
+                showResult('✅ 缓存已成功清理！', false);
+            } else {
+                showResult('❌ 缓存清理失败', true);
+            }
+        };
+        
+        // 如果 jQuery 加载失败
+        window.addEventListener('error', function(e) {
+            if (e.target && e.target.src && e.target.src.includes('jquery')) {
+                showResult('❌ jQuery 加载失败！\n错误: ' + e.message, true);
+            }
+        }, true);
+    </script>
+</body>
+</html>
+
